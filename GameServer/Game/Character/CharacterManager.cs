@@ -55,7 +55,7 @@ public class CharacterManager(PlayerInstance player) : BasePlayerManager(player)
         var templateId = GameResourceTemplateId.FromGdpl((uint)genre,(uint)detail,(uint)particular,1);
         return CharacterData.Characters.Find(Character => Character.TemplateId == templateId);
     }
-
+//Test
     public async ValueTask RepairCharacterWeapons()
     {
         var changed = false;

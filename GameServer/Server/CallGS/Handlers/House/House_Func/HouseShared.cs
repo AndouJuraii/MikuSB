@@ -16,13 +16,19 @@ internal static class HouseRequestScript
         ["UnLockWaterGunGameItem"] = "UnLockWaterGunGameItemRsp",
         ["ChangeNpcSuit"] = "ChangeNpcSuitSuccess",
         ["GiveGiftToArea"] = "GiveGiftToAreaSuccess",
+        ["ExchangeGift"] = "ExchangeGiftSuccess",
         ["BuyRefreshMapTimes"] = "BuyRefreshMapTimesSuccess",
+        ["BuyFur"] = "BuyFurSuccess",
+        ["BuyFurniture"] = "BuyFurnitureSuccess",
         ["CompleteHousePuzzleTask"] = "CompleteHousePuzzleTaskSuccess",
         ["CompleteStarWishTask"] = "CompleteStarWishTaskSuccess",
         ["SetPlayerRingInfo"] = "SetPlayerRingInfoSuccess",
         ["ReadGirlLoveStory"] = "ReadGirlLoveStorySuccess",
         ["GirlRoomChange"] = "GirlRoomChangeSuccess",
-        ["GirlRegister"] = "GirlRegisterSuccess"
+        ["GirlRegister"] = "GirlRegisterSuccess",
+        ["SetBedroomGirlId"] = "SetBedroomGirlIdSuccess",
+        ["GirlLeaveRoom"] = "GirlLeaveRoomSuccess",
+        ["ExchangeRoomGirl"] = "ExchangeRoomGirlSuccess"
     };
 
     internal static string Synthesize(JsonObject request)
@@ -31,14 +37,20 @@ internal static class HouseRequestScript
         var response = CreateSuccessObject();
         foreach (var (key, value) in request)
         {
-            if (key is "FuncName" or "tblog")
+            if (key is "FuncName")
                 continue;
 
             response[key] = value?.DeepClone();
         }
 
         if (!string.IsNullOrEmpty(funcName))
-            response["FuncName"] = FuncNameMap.TryGetValue(funcName, out var renamed) ? renamed : funcName;
+        {
+            response["FuncName"] = FuncNameMap.TryGetValue(funcName, out var renamed)
+                ? renamed
+                : (funcName.EndsWith("Success") || funcName.EndsWith("Rsp")
+                    ? funcName
+                    : funcName + "Success");
+        }
 
         return response.ToJsonString();
     }

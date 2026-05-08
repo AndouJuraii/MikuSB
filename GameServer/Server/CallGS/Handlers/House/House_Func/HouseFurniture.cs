@@ -27,3 +27,16 @@ public class SetGroupFurIndex : IHouseFuncHandler
         await CallGSRouter.SendScript(connection, "House_Request", HouseRequestScript.Synthesize(root), sync);
     }
 }
+
+[HouseFunc("ExchangeGift")]
+public class ExchangeGift : IHouseFuncHandler
+{
+    public async Task Handle(Connection connection, string param)
+    {
+        var root = HouseJson.ParseObject(param);
+        if (root == null) return;
+
+        var sync = new NtfSyncPlayer();
+        await CallGSRouter.SendScript(connection, "House_Request", HouseRequestScript.Synthesize(root), sync);
+    }
+}

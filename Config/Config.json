@@ -2,7 +2,8 @@
   "HttpServer": {
     "BindAddress": "0.0.0.0",
     "PublicAddress": "127.0.0.1",
-    "Port": 21500
+    "Port": 21500,
+    "EnableLog": false
   },
   "GameServer": {
     "BindAddress": "0.0.0.0",
@@ -29,8 +30,12 @@
     ],
     "ServerProfile": {
       "Name": "Miku-chan",
-      "Uid": 80
+      "Signature": "SnowBreak Private Server",
+      "Uid": 80,
+      "Level": 100,
+      "Gender": 1
     },
+    "EnableGmMenu": false,
     "AutoCreateUser": true,
     "SavePersonalDebugFile": false,
     "AutoSendResponseWhenNoHandler": true,
@@ -38,5 +43,14 @@
     "DebugMessage": true,
     "DebugDetailMessage": true,
     "DebugNoHandlerPacket": true
+  },
+  "Proxy": {
+    "Enabled": true,
+    "Port": 8888,
+    "ServerHttpPort": 21500,
+    "InstallRootCertificate": true,
+    "ManageSystemProxy": true,
+    "RestoreSystemProxyOnStop": true,
+    "ProxyOverride": "localhost;127.*;10.*;192.168.*;<local>"
   }
 }

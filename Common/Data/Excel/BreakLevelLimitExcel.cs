@@ -1,6 +1,6 @@
-namespace MikuSB.Data.Excel;
+﻿namespace MikuSB.Data.Excel;
 
-[ResourceEntity("break_level_limit.json")]
+[ResourceEntity("item/break_level_limit.json")]
 public class BreakLevelLimitExcel : ExcelResource
 {
     public int ID { get; set; }

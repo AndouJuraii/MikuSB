@@ -1,6 +1,6 @@
-namespace MikuSB.Data.Excel;
+﻿namespace MikuSB.Data.Excel;
 
-[ResourceEntity("ar_item.json")]
+[ResourceEntity("item/templates/ar_item.json")]
 public class ArItemExcel : ExcelResource
 {
     public uint Genre { get; set; }

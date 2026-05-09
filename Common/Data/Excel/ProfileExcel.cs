@@ -1,6 +1,6 @@
 ﻿namespace MikuSB.Data.Excel;
 
-[ResourceEntity("profile.json")]
+[ResourceEntity("item/templates/profile.json")]
 public class ProfileExcel : ExcelResource
 {
     public uint Genre { get; set; }

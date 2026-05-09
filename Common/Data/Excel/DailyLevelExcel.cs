@@ -1,6 +1,6 @@
 ﻿namespace MikuSB.Data.Excel;
 
-[ResourceEntity("daily_level.json")]
+[ResourceEntity("daily/level.json")]
 public class DailyLevelExcel : ExcelResource
 {
     public uint ID { get; set; }

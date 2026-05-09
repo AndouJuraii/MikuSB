@@ -1,4 +1,5 @@
-﻿using MikuSB.Database.Player;
+using MikuSB.Database;
+using MikuSB.Database.Player;
 using MikuSB.Proto;
 
 namespace MikuSB.GameServer.Server.Packet.Recv.Login;
@@ -12,7 +13,11 @@ public class HandlerNtfSetAttr : Handler
         var player = connection.Player!;
         var attr = player.Data.Attrs
             .FirstOrDefault(x => x.Gid == req.Gid && x.Sid == req.Sid);
-        if (attr != null) attr.Val = req.Val;
+
+        if (attr != null)
+        {
+            attr.Val = req.Val;
+        }
         else
         {
             player.Data.Attrs.Add(new PlayerAttr
@@ -22,6 +27,7 @@ public class HandlerNtfSetAttr : Handler
                 Val = req.Val
             });
         }
+        DatabaseHelper.SaveDatabaseType(player.Data);
         await player.OnHeartBeat();
     }
 }

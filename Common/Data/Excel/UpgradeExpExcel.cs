@@ -1,9 +1,9 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("upgrade_exp.json")]
+[ResourceEntity("item/upgrade_exp.json")]
 public class UpgradeExpExcel : ExcelResource
 {
     public int Lv { get; set; }

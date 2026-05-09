@@ -46,7 +46,7 @@ public class ResourceManager
         foreach (var fileName in attribute.FileName)
             try
             {
-                var path = ConfigManager.Config.Path.ResourcePath + "/ExcelOutput/" + fileName;
+                var path = ConfigManager.Config.Path.ResourcePath + "/" + fileName;
                 var file = new FileInfo(path);
                 if (!file.Exists)
                 {

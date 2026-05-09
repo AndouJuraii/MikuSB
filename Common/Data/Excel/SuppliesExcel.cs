@@ -1,9 +1,9 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("suplies.json")]
+[ResourceEntity("item/templates/suplies.json")]
 public class SuppliesExcel : ExcelResource
 {
     public uint Genre { get; set; }

@@ -1,3 +1,4 @@
+using MikuSB.Database;
 using MikuSB.Enums.Player;
 using MikuSB.Proto;
 using System.Text.Json;
@@ -22,6 +23,7 @@ public class PlayerSetting_ChangeShowCard : ICallGSHandler
             return;
         }
         player.SetShowItem((int)ProfileShowItemTypeEnum.SHOWITEM_GIRL, card.Guid);
+        DatabaseHelper.SaveDatabaseType(player.Data);
         var sync = new NtfSyncPlayer();
         sync.ShowItems.AddRange(player.Data.ShowItems);
         await CallGSRouter.SendScript(connection, "PlayerSetting_ChangeShowCard", "{}", sync);

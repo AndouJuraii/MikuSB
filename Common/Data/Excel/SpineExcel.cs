@@ -1,9 +1,9 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace MikuSB.Data.Excel;
 
 // spine.json: SpineId → Node{i}Req (nodecondition ID per master node index)
-[ResourceEntity("spine.json")]
+[ResourceEntity("item/skill/spine.json")]
 public class SpineExcel : ExcelResource
 {
     [JsonProperty("ID")] public uint Id { get; set; }

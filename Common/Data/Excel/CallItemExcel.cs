@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("call_item.json")]
+[ResourceEntity("item/templates/call_item.json")]
 public class CallItemExcel : ExcelResource
 {
     public uint Genre { get; set; }

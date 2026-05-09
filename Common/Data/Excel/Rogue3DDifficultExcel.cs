@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("server_01_difficult.json")]
+[ResourceEntity("dlc/rogue3d/server_01_difficult.json")]
 public class Rogue3DDifficultExcel : ExcelResource
 {
     [JsonProperty("DifficultID")] public uint DifficultId { get; set; }

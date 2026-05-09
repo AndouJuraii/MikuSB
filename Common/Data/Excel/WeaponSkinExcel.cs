@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("weapon_skin.json")]
+[ResourceEntity("item/templates/weapon_skin.json")]
 public class WeaponSkinExcel : ExcelResource
 {
     public uint Genre { get; set; }

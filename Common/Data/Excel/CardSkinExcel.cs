@@ -2,7 +2,7 @@
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("card_skin.json")]
+[ResourceEntity("item/templates/card_skin.json")]
 public class CardSkinExcel : ExcelResource
 {
     public uint Genre { get; set; }

@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("dailybuff.json")]
+[ResourceEntity("dlc/rogue3d/dailybuff.json")]
 public class Rogue3DDailyBuffExcel : ExcelResource
 {
     [JsonProperty("ID")] public uint Id { get; set; }

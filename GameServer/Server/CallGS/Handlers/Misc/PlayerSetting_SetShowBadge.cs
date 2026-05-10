@@ -1,4 +1,5 @@
-﻿using MikuSB.Enums.Player;
+using MikuSB.Database;
+using MikuSB.Enums.Player;
 using MikuSB.Proto;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -29,6 +30,8 @@ public class PlayerSetting_SetShowBadge : ICallGSHandler
             var uniqueId = i < req.Badges.Count ? req.Badges[i] : 0;
             player.SetShowItem((int)slots[i], uniqueId);
         }
+
+        DatabaseHelper.SaveDatabaseType(player.Data);
 
         var sync = new NtfSyncPlayer();
         sync.ShowItems.AddRange(player.Data.ShowItems);

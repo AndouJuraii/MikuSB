@@ -1,4 +1,4 @@
-﻿using Google.Protobuf;
+using Google.Protobuf;
 using MikuSB.Data;
 using MikuSB.Database;
 using MikuSB.Database.Account;
@@ -230,6 +230,11 @@ public class PlayerInstance(PlayerGameData data)
             proto.Attrs[ToShiftedAttrKey(gid, sid)] = val;
         }
 
+        foreach (var x in Data.StrAttrs)
+        {
+            proto.StrAttrs[ToShiftedAttrKey(x.Gid, x.Sid)] = x.Val;
+        }
+
         proto.ShowItems.AddRange(Data.ShowItems);
 
         return proto;
@@ -249,6 +254,22 @@ public class PlayerInstance(PlayerGameData data)
             Data.ShowItems.Add(0);
 
         Data.ShowItems[index - 1] = itemId;
+    }
+
+    public void SetStrAttr(uint gid, uint sid, string value)
+    {
+        var attr = Data.StrAttrs.FirstOrDefault(x => x.Gid == gid && x.Sid == sid);
+        if (attr == null)
+        {
+            attr = new PlayerStrAttr
+            {
+                Gid = gid,
+                Sid = sid
+            };
+            Data.StrAttrs.Add(attr);
+        }
+
+        attr.Val = value;
     }
 
     public uint ToPackedAttrKey(uint gid, uint sid)

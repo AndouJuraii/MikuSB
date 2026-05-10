@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("break.json")]
+[ResourceEntity("item/break.json")]
 public class BreakExcel : ExcelResource
 {
     [JsonProperty("ID")] public int Id { get; set; }

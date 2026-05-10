@@ -2,7 +2,7 @@
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("manifestation.json")]
+[ResourceEntity("item/templates/manifestation.json")]
 public class ManifestationExcel : ExcelResource
 {
     public uint Genre { get; set; }

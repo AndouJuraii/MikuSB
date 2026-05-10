@@ -1,9 +1,9 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace MikuSB.Data.Excel;
 
 // nodecondition.json: NodeConditionId → NodeXCost per sub-node (1-9)
-[ResourceEntity("nodecondition.json")]
+[ResourceEntity("item/skill/nodecondition.json")]
 public class NodeConditionExcel : ExcelResource
 {
     [JsonProperty("ID")] public uint Id { get; set; }

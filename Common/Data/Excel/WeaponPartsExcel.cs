@@ -2,7 +2,7 @@
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("weapon_parts.json")]
+[ResourceEntity("item/templates/weapon_parts.json")]
 public class WeaponPartsExcel : ExcelResource
 {
     public uint Genre { get; set; }

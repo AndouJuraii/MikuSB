@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("support_card.json")]
+[ResourceEntity("item/templates/support_card.json")]
 public class SupportCardExcel : ExcelResource
 {
     public uint Genre { get; set; }

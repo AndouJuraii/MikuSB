@@ -1,9 +1,9 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("weapon.json")]
+[ResourceEntity("item/templates/weapon.json")]
 public class WeaponExcel : ExcelResource
 {
     public uint Genre { get; set; }

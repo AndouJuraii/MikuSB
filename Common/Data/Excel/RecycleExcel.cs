@@ -1,8 +1,8 @@
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("recycle.json")]
+[ResourceEntity("item/recycle.json")]
 public class RecycleExcel : ExcelResource
 {
     public int ID { get; set; }

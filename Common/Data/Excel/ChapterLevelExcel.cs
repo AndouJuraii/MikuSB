@@ -1,6 +1,6 @@
 namespace MikuSB.Data.Excel;
 
-[ResourceEntity("level.json")]
+[ResourceEntity("chapter/level.json")]
 public class ChapterLevelExcel : ExcelResource
 {
     public uint ID { get; set; }

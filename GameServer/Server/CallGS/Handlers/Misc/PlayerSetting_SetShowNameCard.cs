@@ -1,4 +1,5 @@
-﻿using MikuSB.Enums.Player;
+using MikuSB.Database;
+using MikuSB.Enums.Player;
 using MikuSB.Proto;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -23,6 +24,8 @@ public class PlayerSetting_SetShowNameCard : ICallGSHandler
         }
 
         player.SetShowItem((int)ProfileShowItemTypeEnum.SHOWITEM_NAMECARD, item.UniqueId);
+        DatabaseHelper.SaveDatabaseType(player.Data);
+
         var sync = new NtfSyncPlayer();
         sync.ShowItems.AddRange(player.Data.ShowItems);
         await CallGSRouter.SendScript(connection, "PlayerSetting_SetShowNameCard", "null", sync);

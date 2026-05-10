@@ -11,6 +11,8 @@ public class BossPvpLogic_GetOpenID : ICallGSHandler
         var rsp = new JsonObject
         {
             ["nID"] = 1,
+            ["nChallengeNum"] = 8,      // Current attempts remaining
+            ["nMaxChallengeNum"] = 8,   // Max attempts
             ["tbTimeCfg"] = new JsonArray
             {
                 new JsonObject
@@ -21,6 +23,10 @@ public class BossPvpLogic_GetOpenID : ICallGSHandler
             }
         };
 
-        await CallGSRouter.SendScript(connection, "BossPvpLogic_GetOpenID", rsp.ToJsonString());
+        await CallGSRouter.SendScript(
+            connection,
+            "BossPvpLogic_GetOpenID",
+            rsp.ToJsonString()
+        );
     }
 }

@@ -10,6 +10,7 @@ public class PacketRspLogin : BasePacket
 {
     private static readonly Logger Logger = new("RspLogin");
 
+
     public PacketRspLogin(PlayerInstance player) : base(CmdIds.RspLogin)
     {
         var proto = new RspLogin
@@ -26,4 +27,7 @@ public class PacketRspLogin : BasePacket
 
         SetData(bytes);
     }
+
 }
+
+

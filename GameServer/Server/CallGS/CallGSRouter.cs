@@ -21,27 +21,30 @@ public static class CallGSRouter
     }
 
     public static async Task Route(Connection connection, ReqCallGS req, ushort seqNo)
-    {
-        if (Handlers.TryGetValue(req.Api, out var handler))
-        {
-            try
-            {
-                await handler.Handle(connection, req.Param, seqNo);
-                await connection.Player!.OnHeartBeat();
-            }
-            catch (Exception e)
-            {
-                Logger.Error($"[{req.Api}] {e.Message}", e);
-            }
-            return;
-        }
+{
+    Logger.Info($"[DEBUG] API: {req.Api} | Param: {req.Param}");
 
-        Logger.Error($"No handler for CallGS API: {req.Api}");
+    if (Handlers.TryGetValue(req.Api, out var handler))
+    {
+        try
+        {
+            await handler.Handle(connection, req.Param, seqNo);
+            await connection.Player!.OnHeartBeat();
+        }
+        catch (Exception e)
+        {
+            Logger.Error($"[{req.Api}] {e.Message}", e);
+        }
+        return;
     }
+
+    Logger.Error($"No handler for CallGS API: {req.Api}");
+}
 
     public static async Task SendScript(Connection connection, string api, string arg, NtfSyncPlayer extra = null!)
     {
         var rsp = new NtfCallScript { Api = api, Arg = arg, ExtraSync = extra };
         await connection.SendPacket(CmdIds.NtfScript, rsp);
     }
+    
 }

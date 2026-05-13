@@ -37,12 +37,13 @@
 ## Running
 
 1. Restore dependencies and build.
-
 ```powershell
 dotnet build
 ```
-
-2. Enjoy.
+2. Set `GamePath` in `Config.json` to the path of your game executable.
+3. Start the server and run the `game` command.
+4. Create an account in the server console.  
+5. Enjoy.
 
 ## Feature List
 

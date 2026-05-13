@@ -37,12 +37,13 @@ English documentation is available in [README.md](README.md).
 ## 起動方法
 
 1. 依存を復元してビルドします。
-
 ```powershell
 dotnet build
 ```
-
-2. 楽しんで
+2. Config.json の`GamePath`にあなたのゲームの実行ファイルのパスを書き込みます  
+3. サーバーを起動し`game`コマンドを入力します  
+4. サーバーコンソールでアカウントを作成する  
+5. 楽しむ
 
 ## 機能一覧
 

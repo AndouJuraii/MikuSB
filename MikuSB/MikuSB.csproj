@@ -50,7 +50,6 @@
       Targets="Restore;Publish"
       RemoveProperties="PublishProfile"
       Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier);SelfContained=false;PublishSingleFile=true;PublishDir=$(_UpdaterPublishDir)" />
-
     <Copy
       SourceFiles="$(_UpdaterPublishDir)MikuSB.Updater.exe"
       DestinationFiles="$(PublishDir)MikuSB.Updater.exe"

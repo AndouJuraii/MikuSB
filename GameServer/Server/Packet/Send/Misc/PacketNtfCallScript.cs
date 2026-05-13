@@ -68,6 +68,21 @@ public class PacketNtfCallScript : BasePacket
         SetData(proto);
     }
 
+    public PacketNtfCallScript(List<GameSkinInfo> skins) : base(CmdIds.NtfScript)
+    {
+        var proto = new NtfCallScript
+        {
+            Api = "",
+            Arg = "{}",
+            ExtraSync = new NtfSyncPlayer
+            {
+                Items = { skins.Select(x => x.ToProto()) }
+            }
+        };
+
+        SetData(proto);
+    }
+
     public PacketNtfCallScript(InventoryData inventory) : base(CmdIds.NtfScript)
     {
         var proto = new NtfCallScript
@@ -87,7 +102,7 @@ public class PacketNtfCallScript : BasePacket
 
     public PacketNtfCallScript(PlayerInstance Player) : base(CmdIds.NtfScript)
     {
-        Player.BuildPlayerAttr();
+        Player.BuildPlayerAttr(true);
         var proto = new NtfCallScript
         {
             Api = "",

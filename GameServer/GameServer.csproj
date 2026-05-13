@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\MikuSB.Loader\MikuSB.Loader.csproj" />
     <ProjectReference Include="..\TcpSharp\TcpSharp.csproj" />
     <ProjectReference Include="..\Proto\Proto.csproj" />
   </ItemGroup>

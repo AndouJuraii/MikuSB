@@ -26,10 +26,13 @@ public class AccountData : BaseDatabaseDataHelper
         AccountData? result = null;
         DatabaseHelper.GetAllInstance<AccountData>()?.ForEach(account =>
         {
-            if (account.Username == username) result = account;
+            if (string.Equals(account.Username, username, StringComparison.OrdinalIgnoreCase)) result = account;
         });
         return result;
     }
+
+    public static AccountData? GetAccountByEmail(string email)
+        => GetAccountByUserName(email);
 
     public static AccountData? GetAccountByUid(int uid, bool force = false)
     {
@@ -61,8 +64,15 @@ public class AccountData : BaseDatabaseDataHelper
 
     #region Account
 
-    public static void CreateAccount(string username, int uid, string password)
+    public static AccountData CreateAccount(string username, int uid, string password)
     {
+        if (string.IsNullOrWhiteSpace(username))
+            throw new ArgumentException("Username cannot be empty.", nameof(username));
+        if (GetAccountByUserName(username) != null)
+            throw new InvalidOperationException($"Account '{username}' already exists.");
+        if (uid != 0 && GetAccountByUid(uid) != null)
+            throw new InvalidOperationException($"UID '{uid}' is already in use.");
+
         var newUid = uid;
         if (uid == 0)
         {
@@ -84,6 +94,7 @@ public class AccountData : BaseDatabaseDataHelper
         SetPassword(account, password);
 
         DatabaseHelper.CreateInstance(account);
+        return account;
     }
 
     public static void DeleteAccount(int uid)

@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proxy", "Proxy\Proxy.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MikuSB.Updater", "MikuSB.Updater\MikuSB.Updater.csproj", "{CE0F3A4B-8C55-4A31-A1B5-A0CB1C7F0A11}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MikuSB.Loader", "MikuSB.Loader\MikuSB.Loader.csproj", "{B7AE1E7E-6A42-4E64-B2B1-2EB522F9E3A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{CE0F3A4B-8C55-4A31-A1B5-A0CB1C7F0A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE0F3A4B-8C55-4A31-A1B5-A0CB1C7F0A11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE0F3A4B-8C55-4A31-A1B5-A0CB1C7F0A11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7AE1E7E-6A42-4E64-B2B1-2EB522F9E3A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7AE1E7E-6A42-4E64-B2B1-2EB522F9E3A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7AE1E7E-6A42-4E64-B2B1-2EB522F9E3A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7AE1E7E-6A42-4E64-B2B1-2EB522F9E3A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

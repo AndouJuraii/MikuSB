@@ -29,6 +29,8 @@ public static class GameData
     public static Dictionary<uint, CardSkinPartsExcel> CardSkinPartsData { get; private set; } = [];
     public static Dictionary<uint, CallItemExcel> CallItemData { get; private set; } = [];
     public static Dictionary<uint, WeaponPartsExcel> WeaponPartsData { get; private set; } = [];
+    public static Dictionary<uint, GuideExcel> GuideData { get; private set; } = [];
+    public static Dictionary<uint, DormGiftExcel> DormGiftData { get; private set; } = [];
 }
 
 public static class GameResourceTemplateId

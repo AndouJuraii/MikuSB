@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MikuSB.Configuration;
+using MikuSB.Database.Account;
 using MikuSB.SdkServer.Models;
 using MikuSB.Util;
 using System.Text;
@@ -107,16 +109,106 @@ public class RouteController : ControllerBase
             code = 0,
             data = new
             {
-                agreementUpdateTime = "1728552600000",
-                appDownLoadUrl = "",
-                enableReportDataToDouyin = false,
-                loginType = new[] { "channel" },
-                openActivationCode = false,
-                qqGroup = (string?)null,
-                privacyUpdateTime = "1728552600000",
-                realNameAuth = false
+                platformPrivacyAgreement = "https://www.amazingseasun.com/privacy.html?lang=zh-Hant&gamecode=200001086",
+                payType = new[] { "mycard" },
+                loginType = new[] { "mail", "google", "twitter", "guest", "steam" },
+                closeGeetest = false,
+                userAgreement = "https://www.amazingseasun.com/user.html?lang=zh-Hant&gamecode=111111680",
+                privacyAgreement = "https://www.amazingseasun.com/privacy.html?lang=zh-Hant&gamecode=111111680",
+                initPrivacyUpdateTime = 0,
+                platformUserAgreement = "https://www.amazingseasun.com/user.html?lang=zh-Hant&gamecode=200001086",
+                accountPublicKey = "",
+                payChannel = (string[]?)null,
+                registerPrivacyUrl = "https://xgsdk.xoyo.games:13443/seasun/privacy-agreement/200001086/register/privacy.html?language=zh-Hant",
+                loginPrivacyUrl = "https://xgsdk.xoyo.games:13443/seasun/privacy-agreement/111111680/login/privacy.html?language=zh-Hant"
             },
-            msg = "success"
+            msg = "操作成功"
+        };
+
+        return Ok(rsp);
+    }
+
+    private static AccountData? ResolveAccountByUid(string? uid)
+    {
+        if (int.TryParse(uid, out var parsedUid))
+            return AccountData.GetAccountByUid(parsedUid);
+
+        return null;
+    }
+
+    private static AccountData? ResolveAccountForSdkLogin(string? email, string? uid, string? token)
+    {
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            var accountByComboToken = AccountData.GetAccountByComboToken(token);
+            if (accountByComboToken != null)
+                return accountByComboToken;
+
+            var accountByDispatchToken = AccountData.GetAccountByDispatchToken(token);
+            if (accountByDispatchToken != null)
+                return accountByDispatchToken;
+        }
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            var accountByEmail = AccountData.GetAccountByEmail(email);
+            if (accountByEmail != null)
+                return accountByEmail;
+        }
+
+        return ResolveAccountByUid(uid);
+    }
+
+    private async Task<string?> GetJsonBodyValue(string propertyName)
+    {
+        if (!Request.HasJsonContentType())
+            return null;
+
+        Request.EnableBuffering();
+        Request.Body.Position = 0;
+
+        using var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true);
+        var body = await reader.ReadToEndAsync();
+        Request.Body.Position = 0;
+
+        if (string.IsNullOrWhiteSpace(body))
+            return null;
+
+        try
+        {
+            using var document = JsonDocument.Parse(body);
+            if (document.RootElement.ValueKind != JsonValueKind.Object)
+                return null;
+
+            return document.RootElement.TryGetProperty(propertyName, out var value)
+                ? value.GetString()
+                : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private IActionResult BuildLoginFailedResponse(string message)
+    {
+        object rsp = new
+        {
+            code = 1001,
+            data = (object?)null,
+            msg = message
+        };
+
+        return Ok(rsp);
+    }
+
+    private IActionResult BuildNotFoundResponse(string message)
+    {
+        object rsp = new
+        {
+            code = 1001,
+            data = (object?)null,
+            msg = message
         };
 
         return Ok(rsp);
@@ -124,40 +216,117 @@ public class RouteController : ControllerBase
 
     [HttpGet("/seasun/loginByToken")]
     [HttpPost("/seasun/loginByToken")]
-    public IActionResult LoginByToken(
+    public async Task<IActionResult> LoginByToken(
         [FromQuery] string? uid,
         [FromQuery] string? token,
         [FromForm] string? form_uid,
         [FromForm] string? form_token
     )
     {
-        string finalUid = uid ?? form_uid ?? "10001";
-        string finalToken = token ?? form_token ?? Guid.NewGuid().ToString("N");
+        var finalUid = uid ?? form_uid ?? await GetJsonBodyValue("uid");
+        var finalToken = token ?? form_token ?? await GetJsonBodyValue("token");
+        var account = ResolveAccountForSdkLogin(null, finalUid, finalToken);
+        if (account == null)
+            return BuildLoginFailedResponse("Account not found.");
+
+        var responseUid = account.Uid.ToString();
+        var responseToken = account.GenerateComboToken();
 
         object rsp = new
         {
             code = 0,
             data = new
             {
-                associatedAccounts = new[]
-            {
-                new { bindStatus = false, nickname = "", thirdPartyType = "mail" },
-                new { bindStatus = true, nickname = Config.GameServer.GameServerName, thirdPartyType = "google" },
-                new { bindStatus = false, nickname = "", thirdPartyType = "twitter" },
-                new { bindStatus = false, nickname = "", thirdPartyType = "guest" },
-                new { bindStatus = false, nickname = "", thirdPartyType = "steam" }
-            },
+                associatedAccounts = Array.Empty<string>(),
                 isFirstLogin = false,
                 isNeedKoreaSciAuth = false,
-                ksOpenId = $"ks_{finalUid}",
-                nickname = Config.GameServer.GameServerName,
-                passportId = finalUid.Length > 10 ? finalUid[^10..] : finalUid,
+                ksOpenId = $"ks_{responseUid}",
+                nickname = account.Username,
+                passportId = responseUid,
                 playerFillAgeUrl = "",
                 status = 0,
                 thirdPartyUid = "",
-                token = finalToken,
-                type = "google",
-                uid = finalUid
+                token = responseToken,
+                type = "guest",
+                uid = account.Uid
+            },
+            msg = "操作成功"
+        };
+
+        return Ok(rsp);
+    }
+
+    [HttpGet("/seasun/login")]
+    [HttpPost("/seasun/login")]
+    public async Task<IActionResult> Login(
+        [FromQuery] string? uid,
+        [FromQuery] string? token,
+        [FromQuery] string? email,
+        [FromForm] string? form_uid,
+        [FromForm] string? form_token,
+        [FromForm] string? form_email
+    )
+    {
+        var finalEmail = email ?? form_email ?? await GetJsonBodyValue("email");
+        if (!string.IsNullOrWhiteSpace(finalEmail))
+        {
+            var accountByEmail = AccountData.GetAccountByEmail(finalEmail);
+            if (accountByEmail == null)
+                return BuildLoginFailedResponse("Account not found.");
+
+            var finalUidValue = accountByEmail.Uid.ToString();
+            var finalTokenValue = accountByEmail.GenerateComboToken();
+
+            object emailLoginRsp = new
+            {
+                code = 0,
+                data = new
+                {
+                    associatedAccounts = Array.Empty<string>(),
+                    isFirstLogin = false,
+                    isNeedKoreaSciAuth = false,
+                    ksOpenId = $"ks_{finalUidValue}",
+                    nickname = accountByEmail.Username,
+                    passportId = finalUidValue,
+                    playerFillAgeUrl = "",
+                    status = 0,
+                    thirdPartyUid = "",
+                    token = finalTokenValue,
+                    type = "guest",
+                    uid = accountByEmail.Uid
+                },
+                msg = "操作成功"
+            };
+
+            return Ok(emailLoginRsp);
+        }
+
+        var finalUid = uid ?? form_uid ?? await GetJsonBodyValue("uid");
+        var finalToken = token ?? form_token ?? await GetJsonBodyValue("token");
+        var account = ResolveAccountForSdkLogin(finalEmail, finalUid, finalToken);
+        if (account == null)
+            return BuildLoginFailedResponse("Account not found.");
+
+        var responseUid = account.Uid.ToString();
+        var responseToken = account.GenerateComboToken();
+
+        object rsp = new
+        {
+            code = 0,
+            data = new
+            {
+                associatedAccounts = Array.Empty<string>(),
+                isFirstLogin = false,
+                isNeedKoreaSciAuth = false,
+                ksOpenId = $"ks_{responseUid}",
+                nickname = account.Username,
+                passportId = responseUid,
+                playerFillAgeUrl = "",
+                status = 0,
+                thirdPartyUid = "",
+                token = responseToken,
+                type = "guest",
+                uid = account.Uid
             },
             msg = "操作成功"
         };
@@ -172,8 +341,11 @@ public class RouteController : ControllerBase
         [FromForm] string? form_uid
     )
     {
-        string uidString = uid ?? form_uid ?? "10001";
-        var finalUid = int.TryParse(uidString, out int parsedUid) ? parsedUid : 10001;
+        var account = ResolveAccountByUid(uid ?? form_uid);
+        if (account == null)
+            return BuildNotFoundResponse("Account not found.");
+
+        var uidString = account.Uid.ToString();
 
         object rsp = new
         {
@@ -183,9 +355,9 @@ public class RouteController : ControllerBase
                 bindAccountTypes = new[] { "google" },
                 channelUid = uidString,
                 loginAccountType = "google",
-                nickName = Config.GameServer.GameServerName,
-                passportId = uidString.Length > 10 ? uidString[^10..] : uidString,
-                uid = $"seasun__{uid}"
+                nickName = account.Username,
+                passportId = uidString,
+                uid = $"seasun__{uidString}"
             },
             msg = "操作成功"
         };
@@ -252,7 +424,11 @@ public class RouteController : ControllerBase
     [HttpGet("/account/query-uid/{appId}")]
     public IActionResult QueryUid(string appId, [FromQuery] string authInfo)
     {
-        var uid = ExtractUid(authInfo) ?? "10001";
+        var account = ResolveAccountByUid(ExtractUid(authInfo));
+        if (account == null)
+            return BuildNotFoundResponse("Account not found.");
+
+        var uid = account.Uid.ToString();
 
         object rsp = new
         {

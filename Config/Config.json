@@ -46,11 +46,18 @@
   },
   "Proxy": {
     "Enabled": true,
-    "Port": 8888,
-    "ServerHttpPort": 21500,
-    "InstallRootCertificate": true,
-    "ManageSystemProxy": true,
-    "RestoreSystemProxyOnStop": true,
-    "ProxyOverride": "localhost;127.*;10.*;192.168.*;<local>"
+    "Port": 18888
+  },
+  "Loader": {
+    "GamePath": "",
+    "PatchPaths": [
+      "Patch\\MikuSB-Patch.dll"
+    ],
+    "Arguments": [
+      "-FeatureLevelES31",
+      "-channelid=seasun",
+      "-NoSplash"
+    ],
+    "SetAllProxy": true
   }
 }

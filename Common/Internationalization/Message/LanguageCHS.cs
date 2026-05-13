@@ -35,6 +35,8 @@ public class ServerTextCHS
 /// </summary>
 public class WordTextCHS
 {
+    public string Furniture => "家具";
+    public string Skin => "皮肤";
     public string WeaponPart => "武器部件";
     public string CallItem => "召唤道具";
     public string SkinPart => "皮肤部件";
@@ -126,9 +128,11 @@ public class CommandTextCHS
 {
     public NoticeTextCHS Notice { get; } = new();
     public HelpTextCHS Help { get; } = new();
+    public AccountTextCHS Account { get; } = new();
     public GirlTextCHS Girl { get; } = new();
     public GiveAllTextCHS GiveAll { get; } = new();
     public DebugTextCHS Debug { get; } = new();
+    public GameCommandTextCHS Game { get; } = new();
 }
 
 #endregion
@@ -215,6 +219,14 @@ public class HelpTextCHS
     public string CommandAlias => "命令别名: ";
 }
 
+public class AccountTextCHS
+{
+    public string Desc => "管理 SDK 登录使用的账号映射";
+    public string Usage => "用法: /account create <邮箱> <UID>";
+    public string Created => "已创建账号映射: {0} -> UID {1}";
+    public string CreateFailed => "创建账号映射失败: {0}";
+}
+
 /// <summary>
 ///     path: Game.Command.Girl
 /// </summary>
@@ -227,12 +239,14 @@ public class GirlTextCHS
     public string Usage =>
         "用法: /girl add <detail/-1> -p<particular> -l<level> -s<star>\n" +
         "用法: /girl level <guid/-1> <level>\n" +
-        "用法: /girl neuronic <guid/-1> <level>";
+        "用法: /girl neuronic <guid/-1> <level>\n" +
+        "用法: /girl break <guid/-1> <level>";
 
     public string NotFound => "角色不存在！";
     public string Added => "已为玩家添加 {0} 个角色！";
     public string UpdateLevel => "已将 {1} 个角色等级设置为 {0}！";
     public string UpdateNeuronicLevel => "已将 {1} 个角色的神经元等级设置为 {0}！";
+    public string UpdateBreakLevel => "已将 {1} 个角色的天启/武格等级设置为 {0}！";
 }
 
 /// <summary>
@@ -266,6 +280,14 @@ public class DebugTextCHS
     public string DetailEnabled => "已启用详细调试包输出。";
     public string FileEnabled => "个人调试文件输出已启用。";
     public string FileDisabled => "个人调试文件输出已禁用。";
+}
+
+public class GameCommandTextCHS
+{
+    public string Desc => "使用补丁注入启动已配置的游戏";
+    public string Usage => "用法: /game [额外游戏参数]";
+    public string Started => "游戏已启动。PID: {0}";
+    public string Failed => "游戏启动失败: {0}";
 }
 
 #endregion

@@ -11,6 +11,8 @@ using MikuSB.GameServer.Server.Packet.Send.Misc;
 using MikuSB.Proto;
 using MikuSB.TcpSharp;
 using MikuSB.Util;
+using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace MikuSB.GameServer.Server.Packet.Recv.Login;
@@ -18,28 +20,55 @@ namespace MikuSB.GameServer.Server.Packet.Recv.Login;
 [Opcode(CmdIds.ReqLogin)]
 public class HandlerReqLogin : Handler
 {
-    public override async Task OnHandle(Connection connection, byte[] data, ushort seqNo)
-{
-    var req = ReqLogin.Parser.ParseFrom(data);
-    var account = AccountData.GetAccountByUid(1);
-    if (account == null)
+    private static readonly Logger Logger = new("ReqLogin");
+
+    private static string? ExtractSdkAuthToken(string? token)
     {
-        AccountData.CreateAccount("MIKU", 0, "");
-        account = AccountData.GetAccountByUid(1);
+        if (string.IsNullOrWhiteSpace(token))
+            return null;
+
+        try
+        {
+            var normalized = Uri.UnescapeDataString(token).Trim();
+            var padding = normalized.Length % 4;
+            if (padding > 0)
+                normalized = normalized.PadRight(normalized.Length + (4 - padding), '=');
+
+            var json = Encoding.UTF8.GetString(Convert.FromBase64String(normalized));
+            using var document = JsonDocument.Parse(json);
+            return document.RootElement.TryGetProperty("authToken", out var authToken)
+                ? authToken.GetString()
+                : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public override async Task OnHandle(Connection connection, byte[] data, ushort seqNo)
+    {
+        var req = ReqLogin.Parser.ParseFrom(data);
+        var sdkAuthToken = ExtractSdkAuthToken(req.Token);
+        var account = AccountData.GetAccountByComboToken(req.Token)
+                      ?? AccountData.GetAccountByDispatchToken(req.Token)
+                      ?? AccountData.GetAccountByComboToken(sdkAuthToken ?? "")
+                      ?? AccountData.GetAccountByDispatchToken(sdkAuthToken ?? "");
         if (account == null)
         {
+            Logger.Warn($"Rejected login: provider={req.Provider}, token={req.Token}, authToken={sdkAuthToken}");
             await connection.SendPacket(CmdIds.NtfLogout);
             return;
         }
-    }
-    if (!ResourceManager.IsLoaded)
-        return;
-    var prev = Listener.GetActiveConnection(account.Uid);
-    if (prev != null)
-    {
-        await connection.SendPacket(CmdIds.NtfLogout);
-        prev.Stop();
-    }
+        if (!ResourceManager.IsLoaded)
+            // resource manager not loaded, return
+            return;
+        var prev = Listener.GetActiveConnection(account.Uid);
+        if (prev != null)
+        {
+            await connection.SendPacket(CmdIds.NtfLogout);
+            prev.Stop();
+        }
 
     connection.State = SessionStateEnum.WAITING_FOR_LOGIN;
     var pd = DatabaseHelper.GetInstance<PlayerGameData>(account.Uid);
@@ -47,15 +76,12 @@ public class HandlerReqLogin : Handler
     if (connection.Player.Data.EnsureDisplayName())
         DatabaseHelper.UpdateInstance(connection.Player.Data);
 
-    connection.DebugFile = Path.Combine(ConfigManager.Config.Path.LogPath, "Debug/", $"{account.Uid}/",
-        $"Debug-{DateTime.Now:yyyy-MM-dd HH-mm-ss}.log");
-    await connection.Player.OnEnterGame();
-    connection.Player.Connection = connection;
-    await connection.SendPacket(new PacketRspLogin(connection.Player!));
-    await SendDebugLoginState(connection);
-
-    // Seed BossPvp Season 1 data (42 bosses)
-    SeedBossPvpProgress(connection);
+        connection.DebugFile = Path.Combine(ConfigManager.Config.Path.LogPath, "Debug/", $"{account.Uid}/",
+            $"Debug-{DateTime.Now:yyyy-MM-dd HH-mm-ss}.log");
+        await connection.Player.OnEnterGame();
+        connection.Player.Connection = connection;
+        await connection.SendPacket(new PacketRspLogin(connection.Player!));
+        await SendDebugLoginState(connection);
 
     await connection.Player.OnHeartBeat();
     await connection.SendPacket(new PacketNtfUpdateFriend(connection.Player!));

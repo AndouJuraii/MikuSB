@@ -23,7 +23,24 @@ public static class SdkServer
                 webBuilder
                     .UseStartup<Startup>()
                     .ConfigureLogging((_, logging) => { logging.ClearProviders(); })
-                    .UseUrls(ConfigManager.Config.HttpServer.GetDisplayAddress());
+                    .ConfigureKestrel(serverOptions =>
+                    {
+                        // Pre-warm cert before first TLS handshake
+                        _ = Utils.CertHelper.GetOrCreate(null);
+
+                        var bindAddr = System.Net.IPAddress.Parse(ConfigManager.Config.HttpServer.BindAddress);
+                        foreach (var port in new[] { ConfigManager.Config.HttpServer.Port, 13443, 18443, 31443 })
+                        {
+                            serverOptions.Listen(bindAddr, port, o =>
+                            {
+                                o.UseHttps(https =>
+                                {
+                                    https.ServerCertificateSelector = (_, sni) =>
+                                        Utils.CertHelper.GetOrCreate(sni);
+                                });
+                            });
+                        }
+                    });
             });
 
         var host = builder.Build();

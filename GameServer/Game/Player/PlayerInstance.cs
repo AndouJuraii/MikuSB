@@ -226,7 +226,9 @@ public class PlayerInstance(PlayerGameData data)
                 continue;
             }
 
-            proto.Attrs[ToPackedAttrKey(gid, sid)] = val;
+            //ToDo
+            //Temporary fix for login issues(need to handle LoginRsp properly with zlib.)
+            //proto.Attrs[ToPackedAttrKey(gid, sid)] = val;   
             proto.Attrs[ToShiftedAttrKey(gid, sid)] = val;
         }
 
@@ -288,9 +290,10 @@ public class PlayerInstance(PlayerGameData data)
         return (gid << 16) | sid;
     }
 
-    public void BuildPlayerAttr()
+    public void BuildPlayerAttr(bool additional = false)
     {
-        var bootstrapAttrs = BuildLobbyBootstrapAttrs();
+        var bootstrapAttrs = BuildLobbyBootstrapAttrs().ToList();
+        if (additional) bootstrapAttrs.AddRange(BuildGirlFurnitureAttrs());
         var existingAttrs = Data.Attrs
             .ToDictionary(x => (x.Gid, x.Sid));
         var seenAttrs = new HashSet<(uint Gid, uint Sid)>();
@@ -317,6 +320,24 @@ public class PlayerInstance(PlayerGameData data)
 
             Data.Attrs.Add(newAttr);
             existingAttrs[(gid, sid)] = newAttr;
+        }
+    }
+
+    private static IEnumerable<(uint Gid, uint Sid, uint Value)> BuildGirlFurnitureAttrs()
+    {
+        // Unlock some furniture slots for every girl
+        // Each furniture attr int stores 10 slots using 3 bits per slot
+        // Value below means slot 0..9 = 1
+        const uint furnitureUnlockedValue = 153391689;
+
+        for (uint girlId = 0; girlId <= 50; girlId++)
+        {
+            // FurnitureStart..FurnitureEnd = 10..19
+            for (uint offset = 10; offset <= 19; offset++)
+            {
+                uint sid = (girlId * 50) + offset;
+                yield return (101, sid, furnitureUnlockedValue);
+            }
         }
     }
 
@@ -369,6 +390,14 @@ public class PlayerInstance(PlayerGameData data)
             yield return (21, levelId, 7);
             yield return (22, levelId, 1_700_000_000);
         }
+
+        foreach (var guide in GameData.GuideData.Values)
+        {
+            yield return (4, guide.ID, 999);
+        }
+
+        for (uint favor = 0; favor <= 50; favor++)
+            yield return (101, favor * 50, 500);
 
         // Main Scene 0 mean default scene
         yield return (132, 1, 0);
